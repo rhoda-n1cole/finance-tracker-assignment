@@ -114,7 +114,7 @@ finance-tracker-assignment/
 ## 🚀 Deployment
 
 This application is deployed on GitHub Pages. The live version can be accessed at:
-[Your GitHub Pages URL]
+https://rhoda-n1cole.github.io/finance-tracker-assignment/
 
 ## 📊 Sample Data
 
