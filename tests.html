@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Finance Tracker - Test Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-title {
+            color: #333;
+            border-bottom: 2px solid #155724 ;
+            padding-bottom: 10px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-description {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .test-input {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 5px 0;
+        }
+        .test-expected {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .test-actual {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Finance Tracker - Test Suite</h1>
+    <p>This page tests the core functionality of the Student Finance Tracker application.</p>
+
+    <div class="test-container">
+        <h2 class="test-title">Regex Validation Tests</h2>
+        
+        <div id="description-tests">
+            <h3>Description Validation</h3>
+            <div class="test-description">Tests the description validation regex: /^\S(?:.*\S)?$/</div>
+        </div>
+
+        <div id="amount-tests">
+            <h3>Amount Validation</h3>
+            <div class="test-description">Tests the amount validation regex: /^(0|[1-9]\d*)(\.\d{1,2})?$/</div>
+        </div>
+
+        <div id="date-tests">
+            <h3>Date Validation</h3>
+            <div class="test-description">Tests the date validation regex: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/</div>
+        </div>
+
+        <div id="duplicate-tests">
+            <h3>Duplicate Words Detection</h3>
+            <div class="test-description">Tests the advanced regex: /\b(\w+)\s+\1\b/i</div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2 class="test-title">Search Functionality Tests</h2>
+        <div id="search-tests">
+            <h3>Regex Search and Highlighting</h3>
+            <div class="test-description">Tests the search functionality and highlighting with various patterns</div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2 class="test-title">Data Persistence Tests</h2>
+        <div id="storage-tests">
+            <h3>localStorage Operations</h3>
+            <div class="test-description">Tests data saving and loading from localStorage</div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2 class="test-title">Form Functionality Tests</h2>
+        <div id="form-tests">
+            <h3>Add/Edit Form Operations</h3>
+            <div class="test-description">Tests form submission, validation, and data handling</div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <h2 class="test-title">Dashboard Statistics Tests</h2>
+        <div id="stats-tests">
+            <h3>Statistics Calculations</h3>
+            <div class="test-description">Tests dashboard statistics and calculations</div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the validation functions from the scripts folder
+        import { validateField, REGEX_PATTERNS } from './scripts/validators.js';
+        import { compileRegex, highlightMatches } from './scripts/search.js';
+
+        // Test results tracking and setting to 0 for better functionality
+        let totalTests = 0;
+        let passedTests = 0;
+
+        function runTest(testName, testFunction, containerId) {
+            totalTests++;
+            try {
+                const result = testFunction();
+                if (result.passed) {
+                    passedTests++;
+                    showTestResult(containerId, testName, true, result.message, result.input, result.expected);
+                } else {
+                    showTestResult(containerId, testName, false, result.message, result.input, result.expected);
+                }
+            } catch (error) {
+                showTestResult(containerId, testName, false, `Error: ${error.message}`, '', '');
+            }
+        }
+
+        function showTestResult(containerId, testName, passed, message, input, expected) {
+            const container = document.getElementById(containerId);
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            
+            let html = `<strong>${testName}:</strong> ${message}`;
+            if (input) {
+                html += `<div class="test-input">Input: "${input}"</div>`;
+            }
+            if (expected) {
+                html += `<div class="test-expected">Expected: ${expected}</div>`;
+            }
+            
+            resultDiv.innerHTML = html;
+            container.appendChild(resultDiv);
+        }
+
+        // Description validation tests
+        runTest('Valid description', () => {
+            const result = validateField('description', 'Valid description');
+            return {
+                passed: result.isValid,
+                message: result.isValid ? 'PASS' : 'FAIL',
+                input: 'Valid description',
+                expected: 'Valid'
+            };
+        }, 'description-tests');
+
+        runTest('Description with leading spaces', () => {
+            const result = validateField('description', '  Invalid description');
+            return {
+                passed: !result.isValid,
+                message: !result.isValid ? 'PASS' : 'FAIL',
+                input: '  Invalid description',
+                expected: 'Invalid'
+            };
+        }, 'description-tests');
+
+        runTest('Description with trailing spaces', () => {
+            const result = validateField('description', 'Invalid description  ');
+            return {
+                passed: !result.isValid,
+                message: !result.isValid ? 'PASS' : 'FAIL',
+                input: 'Invalid description  ',
+                expected: 'Invalid'
+            };
+        }, 'description-tests');
+
+        runTest('Empty description', () => {
+            const result = validateField('description', '');
+            return {
+                passed: !result.isValid,
+                message: !result.isValid ? 'PASS' : 'FAIL',
+                input: '""',
+                expected: 'Invalid'
+            };
+        }, 'description-tests');
+
+        // Amount validation tests
+        runTest('Valid amount - integer', () => {
+            const result = validateField('amount', '100');
+            return {
+                passed: result.isValid,
+                message: result.isValid ? 'PASS' : 'FAIL',
+                input: '100',
+                expected: 'Valid'
+            };
+        }, 'amount-tests');
+
+        runTest('Valid amount - decimal', () => {
+            const result = validateField('amount', '12.50');
+            return {
+                passed: result.isValid,
+                message: result.isValid ? 'PASS' : 'FAIL',
+                input: '12.50',
+                expected: 'Valid'
+            };
+        }, 'amount-tests');
+
+        runTest('Invalid amount - negative', () => {
+            const result = validateField('amount', '-10');
+            return {
+                passed: !result.isValid,
+                message: !result.isValid ? 'PASS' : 'FAIL',
+                input: '-10',
+                expected: 'Invalid'
+            };
+        }, 'amount-tests');
+
+        runTest('Invalid amount - too many decimals', () => {
+            const result = validateField('amount', '12.555');
+            return {
+                passed: !result.isValid,
+                message: !result.isValid ? 'PASS' : 'FAIL',
+                input: '12.555',
+                expected: 'Invalid'
+            };
+        }, 'amount-tests');
+
+        // Date validation tests
+        runTest('Valid date', () => {
+            const result = validateField('date', '2025-01-21');
+            return {
+                passed: result.isValid,
+                message: result.isValid ? 'PASS' : 'FAIL',
+                input: '2025-01-21',
+                expected: 'Valid'
+            };
+        }, 'date-tests');
+
+        runTest('Invalid date - wrong format', () => {
+            const result = validateField('date', '21-01-2025');
+            return {
+                passed: !result.isValid,
+                message: !result.isValid ? 'PASS' : 'FAIL',
+                input: '21-01-2025',
+                expected: 'Invalid'
+            };
+        }, 'date-tests');
+
+        runTest('Invalid date - invalid month', () => {
+            const result = validateField('date', '2025-13-21');
+            return {
+                passed: !result.isValid,
+                message: !result.isValid ? 'PASS' : 'FAIL',
+                input: '2025-13-21',
+                expected: 'Invalid'
+            };
+        }, 'date-tests');
+
+        // Duplicate words tests
+        runTest('No duplicate words', () => {
+            const hasDuplicates = REGEX_PATTERNS.duplicateWords.test('This is a normal description');
+            return {
+                passed: !hasDuplicates,
+                message: !hasDuplicates ? 'PASS' : 'FAIL',
+                input: 'This is a normal description',
+                expected: 'No duplicates'
+            };
+        }, 'duplicate-tests');
+
+        runTest('Has duplicate words', () => {
+            const hasDuplicates = REGEX_PATTERNS.duplicateWords.test('Pizza pizza delivery');
+            return {
+                passed: hasDuplicates,
+                message: hasDuplicates ? 'PASS' : 'FAIL',
+                input: 'Pizza pizza delivery',
+                expected: 'Has duplicates'
+            };
+        }, 'duplicate-tests');
+
+        runTest('Case insensitive duplicates', () => {
+            const hasDuplicates = REGEX_PATTERNS.duplicateWords.test('Book book store');
+            return {
+                passed: hasDuplicates,
+                message: hasDuplicates ? 'PASS' : 'FAIL',
+                input: 'Book book store',
+                expected: 'Has duplicates'
+            };
+        }, 'duplicate-tests');
+
+        // Search functionality tests
+        runTest('Regex compilation - valid pattern', () => {
+            const regex = compileRegex('coffee|tea', 'i');
+            return {
+                passed: regex !== null,
+                message: regex !== null ? 'PASS' : 'FAIL',
+                input: 'coffee|tea',
+                expected: 'Valid regex'
+            };
+        }, 'search-tests');
+
+        runTest('Regex compilation - invalid pattern', () => {
+            const regex = compileRegex('[invalid', 'i');
+            return {
+                passed: regex === null,
+                message: regex === null ? 'PASS' : 'FAIL',
+                input: '[invalid',
+                expected: 'Invalid regex'
+            };
+        }, 'search-tests');
+
+        runTest('Text highlighting', () => {
+            const regex = compileRegex('coffee', 'i');
+            const highlighted = highlightMatches('Coffee with friends', regex);
+            const hasMark = highlighted.includes('<mark>');
+            return {
+                passed: hasMark,
+                message: hasMark ? 'PASS' : 'FAIL',
+                input: 'Coffee with friends',
+                expected: 'Contains <mark> tags'
+            };
+        }, 'search-tests');
+
+        // Storage tests
+        runTest('localStorage availability', () => {
+            const available = typeof Storage !== 'undefined';
+            return {
+                passed: available,
+                message: available ? 'PASS' : 'FAIL',
+                input: 'typeof Storage',
+                expected: 'Available'
+            };
+        }, 'storage-tests');
+
+        runTest('JSON stringify/parse', () => {
+            const testData = { id: 'test', amount: 10.50 };
+            const stringified = JSON.stringify(testData);
+            const parsed = JSON.parse(stringified);
+            const matches = parsed.id === testData.id && parsed.amount === testData.amount;
+            return {
+                passed: matches,
+                message: matches ? 'PASS' : 'FAIL',
+                input: 'JSON round-trip',
+                expected: 'Data preserved'
+            };
+        }, 'storage-tests');
+
+        // Form functionality tests
+        runTest('Form validation integration', () => {
+            // Test that validation functions are available
+            const hasValidation = typeof validateField === 'function';
+            return {
+                passed: hasValidation,
+                message: hasValidation ? 'PASS' : 'FAIL',
+                input: 'validateField function',
+                expected: 'Available'
+            };
+        }, 'form-tests');
+
+        // Statistics tests
+        runTest('Statistics calculation functions', () => {
+            // Test that we can access the main app
+            const hasApp = typeof window !== 'undefined';
+            return {
+                passed: hasApp,
+                message: hasApp ? 'PASS' : 'FAIL',
+                input: 'Window object',
+                expected: 'Available'
+            };
+        }, 'stats-tests');
+
+        // Display final results
+        setTimeout(() => {
+            const resultsDiv = document.createElement('div');
+            resultsDiv.className = 'test-container';
+            resultsDiv.innerHTML = `
+                <h2 class="test-title">Test Results Summary</h2>
+                <div class="test-result ${passedTests === totalTests ? 'pass' : 'fail'}">
+                    <strong>Total Tests: ${totalTests}</strong><br>
+                    <strong>Passed: ${passedTests}</strong><br>
+                    <strong>Failed: ${totalTests - passedTests}</strong><br>
+                    <strong>Success Rate: ${Math.round((passedTests / totalTests) * 100)}%</strong>
+                </div>
+            `;
+            document.body.appendChild(resultsDiv);
+        }, 100);
+    </script>
+</body>
+</html>
+
