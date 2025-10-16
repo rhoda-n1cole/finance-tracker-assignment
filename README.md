@@ -132,8 +132,8 @@ A 2-3 minute demonstration video showcasing:
 - Import/export functionality
 - Responsive design across devices
 - Accessibility features
-
-[Link to demo video]
+:
+https://youtu.be/kGYsZ46P8kU
 
 ## 👨‍💻 Developer
 
