@@ -27,8 +27,8 @@ A modern, responsive web application for tracking personal finances, built with 
 
 1. **Clone the repository**:
    ```bash
-   git clone <your-repo-url>
-   cd student-finance-tracker
+   git clone https://github.com/rhoda-n1cole/finance-tracker-assignment
+   cd finance-tracker-assignment
    ```
 
 2. **Open in browser**:
@@ -87,7 +87,7 @@ Run the test suite by opening `tests.html` in your browser. The tests verify:
 
 ### File Structure
 ```
-student-finance-tracker/
+finance-tracker-assignment/
 ├── index.html              # Main application
 ├── styles/
 │   └── main.css            # Complete styling
@@ -137,9 +137,9 @@ A 2-3 minute demonstration video showcasing:
 
 ## 👨‍💻 Developer
 
-**Erioluwa Gideon Olowoyo**
-- GitHub: [Your GitHub Username]
-- Email: [Your Email Address]
+**NICOLE Rhoda Umutesi**
+- GitHub: https://github.com/rhoda-n1cole/
+- Email: r.umutesi1@alustudent.com
 
 ## 📄 License
 
